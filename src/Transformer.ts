@@ -73,7 +73,7 @@ export function transformData(
             return data.num
         case DataTypes.BigInt:
             if (data.big === void 0) throw new TransformerError("big must exist in the data")
-            return data.big.toBigInt()
+            return typeof data.big === "number" ? BigInt(data.big) : data.big.toBigInt()
         case DataTypes.String:
             if (data.str === void 0) throw new TransformerError("str must exist in the data")
             return data.str
