@@ -161,6 +161,16 @@ const config = require("./config.json")
                 assert.equal(res.deletedCount, 1)
             })
 
+            it("a or e or ff", async function() {
+                const res = await mongo.query(
+                    mongo.filter()
+                        .key.equal("a")
+                        .or(mongo.filter().key.equal("e"))
+                        .or(mongo.filter().key.equal("ff"))
+                ).deleteMulti()
+                assert.equal(res.deletedCount, 3)
+            })
+
             it("?.d.year>=2021", async function() {
                 const res = await mongo.query(
                     mongo.filter()
