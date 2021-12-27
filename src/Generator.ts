@@ -17,7 +17,11 @@ export class GeneratorError extends Error {
  * @param value The value to generate
  */
 export function generate<T extends Types>(value: T, refs: Data<Types>[]): Data<T> {
-    return generateData(value, refs, new WeakMap())
+    try {
+        return generateData(value, refs, new WeakMap())
+    } catch (err) {
+        throw new GeneratorError(err.message)
+    }
 }
 
 /**
