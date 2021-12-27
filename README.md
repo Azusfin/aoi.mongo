@@ -9,6 +9,14 @@
 
 https://azusfin.github.io/aoi.mongo
 
+## Notes
+
+- Need mongodb server 3.6+
+- Object and map keys will be ignored if met atleast one of these condition:
+    1. Starts with '$'
+    2. Includes '.'
+    3. Includes null character
+
 ## Examples
 
 - [Setup](#setup)
