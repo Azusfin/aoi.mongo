@@ -1,0 +1,50 @@
+{
+  "name": "aoi.mongo",
+  "version": "0.1.0",
+  "description": "A mongodb wrapper for aoi.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "mocha --delay",
+    "bench": "node benchmark",
+    "build": "tsc && npm run gen-esm",
+    "gen-esm": "gen-esm-wrapper . ./dist/index.mjs",
+    "docs": "typedoc src/index.ts --excludePrivate --excludeInternal --excludeExternals"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Azusfin/aoi.mongo.git"
+  },
+  "keywords": [
+    "aoi",
+    "aoi.js",
+    "mongo",
+    "mongodb",
+    "mongoose",
+    "dbd.js",
+    "dbdmongo",
+    "aoimongo",
+    "dbdjs.mongo",
+    "aoi-mongo"
+  ],
+  "author": "Azusfin",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Azusfin/aoi.mongo/issues"
+  },
+  "homepage": "https://github.com/Azusfin/aoi.mongo#readme",
+  "devDependencies": {
+    "benny": "^3.7.1",
+    "gen-esm-wrapper": "^1.1.3",
+    "mocha": "^9.1.3",
+    "typedoc": "^0.22.10",
+    "typescript": "^4.5.4"
+  },
+  "peerDependencies": {
+    "mongodb": "4.x"
+  }
+}
