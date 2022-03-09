@@ -119,3 +119,43 @@ for await (const doc of cursor) {
 
 // [{ key: "fizz", value: "buzz" }]
 ```
+
+### Transaction
+```js
+/**
+ * Transaction is added on aoi.mongo v0.2
+ * The methods are available within "Transaction" class
+ */
+
+// Example:
+
+const { Mongo, Transaction } = require("aoi.mongo")
+const { MongoClient } = require("mongodb")
+
+;(async () => {
+
+const mongoClient = new MongoClient(process.env.MONGO_URL, { keepAlive: true })
+const client = await mongoClient.connect()
+const mongo = new Mongo({
+    client,
+    dbName: "aoi",
+    collectionName: "main"
+})
+
+const transaction = new Transaction(mongo)
+
+await Transaction.startTransaction(client)
+
+try {
+    // transaction.set(...)
+    // transaction.get(...)
+    // trasnaction.query(...)
+    // ...
+
+    await Transaction.commitTransaction(client)
+} catch {
+    await Transaction.abortTransaction(client)
+}
+
+})()
+```
