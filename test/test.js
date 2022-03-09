@@ -12,8 +12,6 @@ const config = require("./config.json")
         collectionName: "main"
     })
 
-    await mongo.collection.deleteMany()
-
     const a = {
         n: 999,
         s: "aaa"
@@ -58,11 +56,15 @@ const config = require("./config.json")
         d: new Date()
     }
 
-    await aoimongo.Transaction.startTransaction(client)
-
     const transaction = new aoimongo.Transaction(mongo)
 
     describe("aoi.mongo", function() {
+        it("Delete All", async function() {
+            const cursor = await mongo.all()
+            const res = await mongo.deleteAll()
+            assert.equal(res.deletedCount, await cursor.cursor.count())
+        })
+
         describe("Set", function() {
             it("a", async function() {
                 const res = await mongo.set("a", a)
@@ -197,6 +199,10 @@ const config = require("./config.json")
         })
 
         describe("With Transaction", function() {
+            it("Start", function() {
+                return aoimongo.Transaction.startTransaction(client)
+            })
+
             it("Set", async function() {
                 const res = await transaction.set("h", h)
                 assert.equal(res.upsertedCount, 1)
@@ -214,6 +220,29 @@ const config = require("./config.json")
 
             it("Commit", function() {
                 return aoimongo.Transaction.commitTransaction(client)
+            })
+
+            it("Start Again", function() {
+                return aoimongo.Transaction.startTransaction(client)
+            })
+
+            it("Set Again", async function() {
+                const res = await transaction.set("h", h)
+                assert.equal(res.upsertedCount, 1)
+            })
+
+            it("Get Again", async function() {
+                const doc = await transaction.get("h")
+                assert.deepEqual(doc, { key: "h", value: h })
+            })
+
+            it("Delete Again", async function() {
+                const res = await transaction.delete("h")
+                assert.equal(res.deletedCount, 1)
+            })
+
+            it("Abort", function() {
+                return aoimongo.Transaction.abortTransaction(client)
             })
         })
     })

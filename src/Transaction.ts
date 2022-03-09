@@ -100,6 +100,13 @@ export class Transaction<T extends Types> {
         return this.mongo.all(this.session)
     }
 
+    /**
+     * Delete all document in the collection
+     */
+    deleteAll(): Promise<DeleteResult> {
+        return this.mongo.deleteAll(this.session)
+    }
+
     /** Create an index in the ocllection */
     index(indexSpec: {
         key?: IndexDirection,

@@ -117,6 +117,14 @@ export class Mongo<T extends Types> {
         return new Cursor(cursor)
     }
 
+    /** 
+     * Delete all document in the collection
+     * @param session Session of transaction, if any
+     */
+    deleteAll(session?: ClientSession): Promise<DeleteResult> {
+        return this.collection.deleteMany({}, { session })
+    }
+
     /** Create an index in the ocllection */
     async index(indexSpec: {
         key?: IndexDirection,
