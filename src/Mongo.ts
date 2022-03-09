@@ -9,6 +9,7 @@ import {
     MongoClient,
     UpdateResult,
     DeleteResult,
+    ClientSession,
     IndexDirection,
     CollectionOptions,
     CreateIndexesOptions
@@ -57,14 +58,15 @@ export class Mongo<T extends Types> {
      * Set a data into the collection
      * @param key The data key
      * @param value The data value
+     * @param session Session of transaction, if any
      */
-    async set(key: string, value: T): Promise<UpdateResult> {
+    async set(key: string, value: T, session?: ClientSession): Promise<UpdateResult> {
         const refs = []
         const data = generate(value, refs)
         const res = await this.collection.updateOne({ key }, {
             $setOnInsert: { key },
             $set: { data, refs }
-        }, { upsert: true })
+        }, { upsert: true, session })
 
         return res
     }
@@ -72,44 +74,45 @@ export class Mongo<T extends Types> {
     /**
      * Get a document from the collection
      * @param key The document key
+     * @param session Session of transaction, if any
      */
-    async get(key: string): Promise<Doc<T> | null> {
+    async get(key: string, session?: ClientSession): Promise<Doc<T> | null> {
         return this.query(
-            this.filter()
-            .key
-            .equal(key)
+            this.filter().key.equal(key),
+            session
         ).findOne()
     }
 
     /**
      * Delete a document from the collection
      * @param key The document key
+     * @param session Session of transaction, if any
      */
-    async delete(key: string): Promise<DeleteResult> {
+    async delete(key: string, session?: ClientSession): Promise<DeleteResult> {
         return this.query(
-            this.filter()
-            .key
-            .equal(key)
+            this.filter().key.equal(key),
+            session
         ).deleteOne()
     }
 
     /**
      * Find and match all document key with the matcher in the collection
      * @param matcher The matcher in regex
+     * @param session Session of transaction, if any
      */
-    async match(matcher: RegExp): Promise<Cursor<T>> {
+    async match(matcher: RegExp, session?: ClientSession): Promise<Cursor<T>> {
         return this.query(
-            this.filter()
-            .key
-            .match(matcher)
+            this.filter().key.match(matcher),
+            session
         ).findMulti()
     }
 
     /**
      * Get all document in the collection
+     * @param session Session of transaction, if any
      */
-    async all(): Promise<Cursor<T>> {
-        const cursor = await this.collection.find({})
+    async all(session?: ClientSession): Promise<Cursor<T>> {
+        const cursor = await this.collection.find({}, { session })
 
         return new Cursor(cursor)
     }
@@ -136,13 +139,14 @@ export class Mongo<T extends Types> {
             } else spec.data = indexSpec.data
         }
 
-        if (options) await this.collection.createIndex(spec, options)
-        else await this.collection.createIndex(spec)
+        options ??= {}
+
+        await this.collection.createIndex(spec, options)
     }
 
     /** Create a query object */
-    query(match: Match<T>): Query<T> {
-        return new Query(this, match)
+    query(match: Match<T>, session?: ClientSession): Query<T> {
+        return new Query(this, match, session)
     }
 
     /** Shortcut for creating filter */

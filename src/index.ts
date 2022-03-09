@@ -10,5 +10,6 @@ export * from "./Cursor"
 export * from "./IncString"
 export * from "./Generator"
 export * from "./Transformer"
+export * from "./Transaction"
 
 export * as Query from "./query"

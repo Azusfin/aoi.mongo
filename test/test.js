@@ -12,6 +12,8 @@ const config = require("./config.json")
         collectionName: "main"
     })
 
+    await mongo.collection.deleteMany()
+
     const a = {
         n: 999,
         s: "aaa"
@@ -49,6 +51,16 @@ const config = require("./config.json")
         s: "ggg",
         d: new Date()
     }
+
+    const h = {
+        n: 5135135,
+        s: "hhh",
+        d: new Date()
+    }
+
+    await aoimongo.Transaction.startTransaction(client)
+
+    const transaction = new aoimongo.Transaction(mongo)
 
     describe("aoi.mongo", function() {
         describe("Set", function() {
@@ -181,6 +193,27 @@ const config = require("./config.json")
                         .greaterThanEqual(2021)
                 ).deleteMulti()
                 assert.equal(res.deletedCount, 3)
+            })
+        })
+
+        describe("With Transaction", function() {
+            it("Set", async function() {
+                const res = await transaction.set("h", h)
+                assert.equal(res.upsertedCount, 1)
+            })
+
+            it("Get", async function() {
+                const doc = await transaction.get("h")
+                assert.deepEqual(doc, { key: "h", value: h })
+            })
+
+            it("Delete", async function() {
+                const res = await transaction.delete("h")
+                assert.equal(res.deletedCount, 1)
+            })
+
+            it("Commit", function() {
+                return aoimongo.Transaction.commitTransaction(client)
             })
         })
     })
